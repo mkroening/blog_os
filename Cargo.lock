@@ -33,8 +33,7 @@ checksum = "dd6d8b0a125f7c1be168f6fd21d12c84148a807ef4896df8215a5607f9b2a9b4"
 [[package]]
 name = "cpuio"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d531514efb06912141fa65967447de805691b685a7565c87d1765afe34a98aa7"
+source = "git+https://github.com/mwkroening/toyos-rs.git?branch=rdtsc#44ce6a2e5e7ea55dbc54185e0316a543caa3dfa0"
 
 [[package]]
 name = "lazy_static"
@@ -48,8 +47,7 @@ dependencies = [
 [[package]]
 name = "pic8259_simple"
 version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af2a5497fb8e59bf8015f67b7dff238d75ef445e03f23edac24ac3a8f09be952"
+source = "git+https://github.com/mwkroening/toyos-rs.git?branch=rdtsc#44ce6a2e5e7ea55dbc54185e0316a543caa3dfa0"
 dependencies = [
  "cpuio",
 ]
