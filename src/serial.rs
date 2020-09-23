@@ -1,14 +1,59 @@
-use lazy_static::lazy_static;
+use core::fmt;
 use spin::Mutex;
-use uart_16550::SerialPort;
+use x86_64::instructions::port::Port;
 
-lazy_static! {
-    pub static ref SERIAL1: Mutex<SerialPort> = {
-        let mut serial_port = unsafe { SerialPort::new(0x3F8) };
-        serial_port.init();
-        Mutex::new(serial_port)
-    };
+/// An interface to a serial port that allows sending out individual bytes.
+pub struct SerialPort {
+    data: Port<u8>,
 }
+
+impl SerialPort {
+    const SERIAL1: Self = unsafe { Self::new(0x3F8) };
+
+    /// Creates a new serial port interface on the given I/O port.
+    ///
+    /// This function is unsafe because the caller must ensure that the given base address
+    /// really points to a serial port device.
+    pub const unsafe fn new(base: u16) -> SerialPort {
+        SerialPort {
+            data: Port::new(base),
+        }
+    }
+
+    /// Sends a byte on the serial port.
+    pub fn send(&mut self, data: u8) {
+        unsafe {
+            match data {
+                8 | 0x7F => {
+                    self.data.write(8);
+                    self.data.write(b' ');
+                    self.data.write(8)
+                }
+                _ => {
+                    self.data.write(data);
+                }
+            }
+        }
+    }
+
+    /// Receives a byte on the serial port.
+    pub fn receive(&mut self) -> u8 {
+        unsafe {
+            self.data.read()
+        }
+    }
+}
+
+impl fmt::Write for SerialPort {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        for byte in s.bytes() {
+            self.send(byte);
+        }
+        Ok(())
+    }
+}
+
+pub static SERIAL1: Mutex<SerialPort> = Mutex::new(SerialPort::SERIAL1);
 
 #[doc(hidden)]
 pub fn _print(args: ::core::fmt::Arguments) {
