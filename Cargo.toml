@@ -13,21 +13,24 @@ name = "stack_overflow"
 harness = false
 
 [dependencies]
-bootloader = "0.9.8"
+bootloader = "0.9.9"
 rlibc = "1.0.0"
-volatile = "0.2.6"
 spin = "0.5.2"
-x86_64 = "0.11.0"
-uart_16550 = "0.2.0"
+x86_64 = "0.12.0"
+uart_16550 = "0.2.7"
 pic8259_simple = "0.2.0"
-pc-keyboard = "0.5.0"
+pc-keyboard = "0.5.1"
 
 [dependencies.lazy_static]
-version = "1.0"
+version = "1.4.0"
 features = ["spin_no_std"]
 
 
 [package.metadata.bootimage]
+run-args = [
+    "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio",
+    "-display", "none"
+]
 test-args = [
     "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio",
     "-display", "none"
