@@ -1,5 +1,6 @@
 #![no_std]
 #![cfg_attr(test, no_main)]
+#![feature(llvm_asm)]
 #![feature(custom_test_frameworks)]
 #![feature(abi_x86_interrupt)]
 #![test_runner(crate::test_runner)]
@@ -19,7 +20,12 @@ pub fn init() {
     interrupts::init_idt();
     unsafe { interrupts::PICS.lock().initialize() };
     pit::Timer::init();
+    unsafe { x86_64::software_interrupt!(32) };
     x86_64::instructions::interrupts::enable();
+    println!(
+        "x86_64::instructions::interrupts::are_enabled() = {}",
+        x86_64::instructions::interrupts::are_enabled()
+    );
 }
 pub trait Testable {
     fn run(&self) -> ();
