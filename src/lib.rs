@@ -12,11 +12,13 @@ use core::panic::PanicInfo;
 pub mod gdt;
 pub mod interrupts;
 pub mod serial;
+pub mod pit;
 
 pub fn init() {
     gdt::init();
     interrupts::init_idt();
     unsafe { interrupts::PICS.lock().initialize() };
+    pit::Timer::init();
     x86_64::instructions::interrupts::enable();
 }
 pub trait Testable {
