@@ -20,33 +20,46 @@ lazy_static! {
     };
 }
 
+fn kernel_data_segment() -> Descriptor {
+	use x86_64::structures::gdt::DescriptorFlags as Flags;
+
+	let flags = Flags::USER_SEGMENT | Flags::PRESENT | Flags::WRITABLE | Flags::LONG_MODE;
+    Descriptor::UserSegment(flags.bits())
+}
+
 lazy_static! {
     static ref GDT: (GlobalDescriptorTable, Selectors) = {
         let mut gdt = GlobalDescriptorTable::new();
         let code_selector = gdt.add_entry(Descriptor::kernel_code_segment());
+        let data_selector = gdt.add_entry(kernel_data_segment());
         let tss_selector = gdt.add_entry(Descriptor::tss_segment(&TSS));
         (
             gdt,
             Selectors {
                 code_selector,
-                tss_selector,
+                data_selector,
+				tss_selector,
             },
         )
     };
 }
 
 struct Selectors {
-    code_selector: SegmentSelector,
-    tss_selector: SegmentSelector,
+	code_selector: SegmentSelector,
+	data_selector: SegmentSelector,
+	tss_selector: SegmentSelector,
 }
 
 pub fn init() {
-    use x86_64::instructions::segmentation::set_cs;
+    use x86_64::instructions::segmentation::{load_ds, load_es, load_ss, set_cs};
     use x86_64::instructions::tables::load_tss;
 
     GDT.0.load();
     unsafe {
         set_cs(GDT.1.code_selector);
+        load_ds(GDT.1.data_selector);
+        load_es(GDT.1.data_selector);
+        load_ss(GDT.1.data_selector);
         load_tss(GDT.1.tss_selector);
     }
 }
