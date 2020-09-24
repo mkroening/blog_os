@@ -4,6 +4,9 @@ version = "0.1.0"
 authors = ["Philipp Oppermann <dev@phil-opp.com>"]
 edition = "2018"
 
+[features]
+default = ["x2apic"]
+
 [[test]]
 name = "should_panic"
 harness = false
@@ -17,7 +20,8 @@ bootloader = "0.9.9"
 rlibc = "1.0.0"
 spin = "0.5.2"
 x86_64 = "0.12.0"
-pic8259_simple = { git = "https://github.com/mwkroening/toyos-rs.git", branch = "rdtsc" }
+pic8259_simple = { path = "../toyos-rs/crates/pic8259_simple" }
+x2apic = { version = "0.1", optional = true }
 
 [dependencies.lazy_static]
 version = "1.4.0"
@@ -27,7 +31,8 @@ features = ["spin_no_std"]
 [package.metadata.bootimage]
 run-args = [
     "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio",
-    "-display", "none"
+    "-display", "none",
+    "-enable-kvm", "-cpu", "host,+x2apic",
 ]
 test-args = [
     "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio",

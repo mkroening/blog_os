@@ -17,15 +17,7 @@ pub mod pit;
 
 pub fn init() {
     gdt::init();
-    interrupts::init_idt();
-    unsafe { interrupts::PICS.lock().initialize() };
-    pit::Timer::init();
-    unsafe { x86_64::software_interrupt!(32) };
-    x86_64::instructions::interrupts::enable();
-    println!(
-        "x86_64::instructions::interrupts::are_enabled() = {}",
-        x86_64::instructions::interrupts::are_enabled()
-    );
+    interrupts::init();
 }
 pub trait Testable {
     fn run(&self) -> ();
