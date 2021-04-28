@@ -34,7 +34,8 @@ pub fn init_heap(
         let frame = frame_allocator
             .allocate_frame()
             .ok_or(MapToError::FrameAllocationFailed)?;
-        let flags = PageTableFlags::PRESENT | PageTableFlags::WRITABLE;
+        let flags =
+            PageTableFlags::PRESENT | PageTableFlags::WRITABLE | PageTableFlags::USER_ACCESSIBLE;
         unsafe { mapper.map_to(page, frame, flags, frame_allocator)?.flush() };
     }
 
